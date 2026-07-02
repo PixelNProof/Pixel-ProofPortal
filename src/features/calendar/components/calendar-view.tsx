@@ -9,8 +9,10 @@ import { Badge } from "@/components/ui/badge"
 import { mockEvents } from "../data/mock-calendar"
 import { EventType } from "../types/calendar"
 import { toast } from "sonner"
+import { useEvents } from "@/hooks/use-events"
 
 export function CalendarView() {
+  const { data: events = [], isLoading } = useEvents()
   const [date, setDate] = useState<Date | undefined>(new Date())
   const [isMounted, setIsMounted] = useState(false)
 
@@ -28,7 +30,7 @@ export function CalendarView() {
   }
 
   // Simple filter to show events for selected date (mock logic compares just the day number for simplicity in this mock)
-  const selectedEvents = mockEvents.filter(e => date && e.date.getDate() === date.getDate() && e.date.getMonth() === date.getMonth())
+  const selectedEvents = events.filter(e => date && e.date.getDate() === date.getDate() && e.date.getMonth() === date.getMonth())
 
   return (
     <div className="flex-1 p-4 md:p-8 pt-6 h-full flex flex-col min-w-0 max-w-[1400px] mx-auto w-full">

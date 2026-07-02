@@ -114,3 +114,4 @@ CREATE POLICY "Users can manage their own events" ON events FOR ALL USING (auth.
 -- Example: 
 -- INSERT INTO clients (id, user_id, name, industry, status, services, contact, spent, website) 
 -- VALUES ('a4b64f9b-6fc6-4a46-8e50-bd1865e91eb7', 'YOUR_USER_ID_HERE', 'Acme Corp', 'SaaS', 'Active', '{"Branding", "Content"}', 'john@acme.com', '$12,000', 'acme.com');
+how do u think should client content and client files should work bc rn in content there is all clients in one right

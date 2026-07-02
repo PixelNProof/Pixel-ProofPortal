@@ -1,9 +1,10 @@
 export interface Idea {
   id: string;
+  user_id: string;
   title: string;
-  imageUrl: string;
-  source?: string;
   tags: string[];
-  savedAt: string;
-  aspectRatio: "square" | "portrait" | "landscape";
+  aspect_ratio: "square" | "portrait" | "landscape" | string;
+  image_url: string;
+  source?: string;
+  created_at: string;
 }

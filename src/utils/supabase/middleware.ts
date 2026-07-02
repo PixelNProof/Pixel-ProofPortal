@@ -32,11 +32,26 @@ export const updateSession = async (request: NextRequest) => {
     },
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user }, error } = await supabase.auth.getUser();
+
+  console.log("MIDDLEWARE DEBUG:")
+  console.log("- Cookies found:", request.cookies.getAll().map(c => c.name).join(", "))
+  console.log("- User:", user ? "Found User" : "No User")
+  if (error) console.log("- Auth Error:", error.message)
 
   // If the user is not authenticated and trying to access a protected route (anything not starting with /login or /forgot-password)
   const isAuthRoute = request.nextUrl.pathname.startsWith('/login') || request.nextUrl.pathname.startsWith('/forgot-password');
   
+  // TEMPORARY BYPASS FOR LOCAL DEVELOPMENT DNS ISSUES
+  if (process.env.NODE_ENV === 'development') {
+    if (isAuthRoute) {
+      const url = request.nextUrl.clone();
+      url.pathname = '/';
+      return NextResponse.redirect(url);
+    }
+    return supabaseResponse;
+  }
+
   if (!user && !isAuthRoute && request.nextUrl.pathname !== '/auth/callback') {
     const url = request.nextUrl.clone();
     url.pathname = '/login';

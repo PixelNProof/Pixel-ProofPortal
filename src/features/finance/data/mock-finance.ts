@@ -10,8 +10,8 @@ export const mockRevenue: RevenueData[] = [
 ]
 
 export const mockInvoices: Invoice[] = [
-  { id: "INV-001", client: "Acme Corp", amount: 4500, status: "Paid", dueDate: "Oct 1" },
-  { id: "INV-002", client: "Lumina Fashion", amount: 2400, status: "Pending", dueDate: "Oct 15" },
-  { id: "INV-003", client: "Elevate Real Estate", amount: 8000, status: "Overdue", dueDate: "Sep 28" },
-  { id: "INV-004", client: "Zephyr Tech", amount: 1500, status: "Pending", dueDate: "Oct 20" },
+  { id: "1", user_id: "demo", client_id: "1", client: { name: "Acme Corp" }, amount: 4500, status: "Paid", due_date: "2026-10-01", created_at: "2026-09-01" },
+  { id: "2", user_id: "demo", client_id: "2", client: { name: "Lumina Fashion" }, amount: 2400, status: "Pending", due_date: "2026-10-15", created_at: "2026-09-02" },
+  { id: "3", user_id: "demo", client_id: "4", client: { name: "Elevate Real Estate" }, amount: 8000, status: "Overdue", due_date: "2026-09-28", created_at: "2026-08-28" },
+  { id: "4", user_id: "demo", client_id: "3", client: { name: "Zephyr Tech" }, amount: 1500, status: "Pending", due_date: "2026-10-20", created_at: "2026-09-10" },
 ]

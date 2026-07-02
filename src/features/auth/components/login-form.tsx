@@ -30,19 +30,23 @@ export function LoginForm({
     e.preventDefault()
     setLoading(true)
     
-    const supabase = createClient()
-    const { error } = await supabase.auth.signInWithPassword({ 
-      email, 
-      password 
-    })
-    
-    if (error) {
-      toast.error(error.message)
+    try {
+      const supabase = createClient()
+      const { error } = await supabase.auth.signInWithPassword({ 
+        email, 
+        password 
+      })
+      
+      if (error) {
+        toast.error(error.message)
+        setLoading(false)
+      } else {
+        toast.success("Successfully logged in!")
+        window.location.href = "/"
+      }
+    } catch (err: any) {
+      toast.error(err?.message || "Network error: Connection blocked by proxy/VPN.")
       setLoading(false)
-    } else {
-      toast.success("Successfully logged in!")
-      router.push("/")
-      router.refresh()
     }
   }
 

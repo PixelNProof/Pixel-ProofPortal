@@ -24,3 +24,30 @@ export function useClients() {
     }
   })
 }
+
+export function useClient(id: string) {
+  const supabase = createClient()
+
+  return useQuery({
+    queryKey: ['client', id],
+    queryFn: async () => {
+      try {
+        const { data, error } = await supabase
+          .from('clients')
+          .select('*')
+          .eq('id', id)
+          .single()
+        
+        if (error || !data) {
+          const mock = mockClients.find(c => c.id === id)
+          return mock || null
+        }
+        
+        return data
+      } catch (err) {
+        return mockClients.find(c => c.id === id) || null
+      }
+    },
+    enabled: !!id
+  })
+}

@@ -1,9 +1,16 @@
 export interface Invoice {
   id: string;
-  client: string;
+  user_id: string;
+  client_id: string;
   amount: number;
   status: "Paid" | "Pending" | "Overdue";
-  dueDate: string;
+  due_date: string;
+  created_at: string;
+  
+  // Joined table data
+  client?: {
+    name: string;
+  };
 }
 
 export interface RevenueData {

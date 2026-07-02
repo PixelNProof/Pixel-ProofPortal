@@ -15,6 +15,7 @@ export const metadata: Metadata = {
 };
 
 import { Toaster } from "@/components/ui/sonner";
+import { GlobalCommandMenu } from "@/components/global-command-menu";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
         <Providers>
           {children}
         </Providers>
+        <GlobalCommandMenu />
         <Toaster />
       </body>
     </html>

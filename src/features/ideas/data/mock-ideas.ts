@@ -2,62 +2,57 @@ import { Idea } from "../types/idea";
 
 export const mockIdeas: Idea[] = [
   {
-    id: "i1",
-    title: "Minimalist SaaS Landing Page",
-    imageUrl: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?q=80&w=600&auto=format&fit=crop",
-    source: "Dribbble",
-    tags: ["UI", "Web", "Minimal"],
-    savedAt: "2 days ago",
-    aspectRatio: "landscape"
+    id: "1",
+    user_id: "demo",
+    title: "Minimalist Typography Poster",
+    imageUrl: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
+    image_url: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
+    source: "Instagram",
+    tags: ["typography", "minimalism", "design"],
+    created_at: "2026-10-15",
+    aspect_ratio: "portrait"
   },
   {
-    id: "i2",
-    title: "Dark Mode Dashboard",
-    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=400&auto=format&fit=crop",
-    tags: ["Dashboard", "Dark Mode"],
-    savedAt: "1 week ago",
-    aspectRatio: "portrait"
-  },
-  {
-    id: "i3",
-    title: "Typography Inspiration",
-    imageUrl: "https://images.unsplash.com/photo-1561070791-2526d30994b5?q=80&w=400&auto=format&fit=crop",
-    source: "Awwwards",
-    tags: ["Typography", "Brand"],
-    savedAt: "3 days ago",
-    aspectRatio: "portrait"
-  },
-  {
-    id: "i4",
-    title: "Geometric Brand Identity",
-    imageUrl: "https://images.unsplash.com/photo-1620641788421-7a1c342ea42e?q=80&w=600&auto=format&fit=crop",
-    tags: ["Branding", "Logo"],
-    savedAt: "Just now",
-    aspectRatio: "square"
-  },
-  {
-    id: "i5",
-    title: "Mobile App Onboarding",
-    imageUrl: "https://images.unsplash.com/photo-1611162617474-5b21e879e113?q=80&w=400&auto=format&fit=crop",
+    id: "2",
+    user_id: "demo",
+    title: "Brand Identity Layout",
+    imageUrl: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=2670&auto=format&fit=crop",
+    image_url: "https://images.unsplash.com/photo-1586717791821-3f44a563fa4c?q=80&w=2670&auto=format&fit=crop",
     source: "Behance",
-    tags: ["App", "UX"],
-    savedAt: "1 month ago",
-    aspectRatio: "portrait"
+    tags: ["branding", "layout", "print"],
+    created_at: "2026-10-14",
+    aspect_ratio: "landscape"
   },
   {
-    id: "i6",
-    title: "E-commerce Product Card",
-    imageUrl: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?q=80&w=600&auto=format&fit=crop",
-    tags: ["UI", "Shop"],
-    savedAt: "2 weeks ago",
-    aspectRatio: "landscape"
+    id: "3",
+    user_id: "demo",
+    title: "3D Abstract Render",
+    imageUrl: "https://images.unsplash.com/photo-1618005192384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
+    image_url: "https://images.unsplash.com/photo-1618005192384-a83a8bd57fbe?q=80&w=2564&auto=format&fit=crop",
+    source: "Pinterest",
+    tags: ["3D", "abstract", "color"],
+    created_at: "2026-10-12",
+    aspect_ratio: "square"
   },
   {
-    id: "i7",
-    title: "Creative Agency Portfolio",
-    imageUrl: "https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?q=80&w=600&auto=format&fit=crop",
-    tags: ["Web", "Agency"],
-    savedAt: "5 days ago",
-    aspectRatio: "square"
-  }
+    id: "4",
+    user_id: "demo",
+    title: "Dark Mode Dashboard",
+    imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop",
+    image_url: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?q=80&w=2670&auto=format&fit=crop",
+    tags: ["UI/UX", "dark mode", "dashboard"],
+    created_at: "2026-10-10",
+    aspect_ratio: "landscape"
+  },
+  {
+    id: "5",
+    user_id: "demo",
+    title: "Neon Typography",
+    imageUrl: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?q=80&w=2569&auto=format&fit=crop",
+    image_url: "https://images.unsplash.com/photo-1563206767-5b18f218e8de?q=80&w=2569&auto=format&fit=crop",
+    source: "Dribbble",
+    tags: ["neon", "typography", "cyberpunk"],
+    created_at: "2026-10-09",
+    aspect_ratio: "portrait"
+  },
 ];

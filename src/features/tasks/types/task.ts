@@ -3,11 +3,17 @@ export type TaskPriority = "Urgent" | "High" | "Medium" | "Low" | "None";
 
 export interface Task {
   id: string;
+  user_id: string;
+  client_id?: string | null;
   title: string;
   status: TaskStatus;
   priority: TaskPriority;
-  client?: string;
-  assignee?: string;
-  dueDate?: string;
-  createdAt: string;
+  assignee?: string | null;
+  due_date?: string | null;
+  created_at: string;
+  
+  // Joined relation
+  client?: {
+    name: string;
+  } | null;
 }

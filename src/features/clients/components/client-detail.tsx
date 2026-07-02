@@ -1,141 +1,190 @@
 "use client"
 
-import { ArrowLeft, ExternalLink, Mail, Phone, MoreHorizontal, Upload } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { useClients } from "@/hooks/use-clients"
+import { useContent } from "@/hooks/use-content"
 import { Badge } from "@/components/ui/badge"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
+import { ArrowLeft, Building2, Globe, Mail, MapPin, MoreVertical, CreditCard, LayoutTemplate, CheckCircle2 } from "lucide-react"
 import Link from "next/link"
-import { mockClients } from "../data/mock-clients"
-import { toast } from "sonner"
+import { format } from "date-fns"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { ContentLayout } from "@/features/content/components/content-layout"
+import { AssetManager } from "@/features/assets/components/asset-manager"
+import { EditClientDialog } from "./edit-client-dialog"
 
-export function ClientDetail({ id }: { id: string }) {
-  const client = mockClients.find(c => c.id === id) || mockClients[0]
+export function ClientDetail({ clientId }: { clientId: string }) {
+  const { data: clients = [], isLoading: isLoadingClients } = useClients()
+  const { data: content = [], isLoading: isLoadingContent } = useContent()
+
+  const client = clients.find(c => String(c.id) === String(clientId))
+  const clientContent = content.filter(c => String(c.client?.id) === String(clientId) || String(c.client_id) === String(clientId))
+
+  if (isLoadingClients) {
+    return (
+      <div className="flex-1 p-8 flex items-center justify-center min-h-screen">
+        <div className="h-8 w-8 rounded-full border-2 border-primary border-t-transparent animate-spin" />
+      </div>
+    )
+  }
+
+  if (!client) {
+    return (
+      <div className="flex-1 p-8 min-h-screen flex flex-col items-center justify-center">
+        <Building2 className="h-16 w-16 text-muted-foreground/30 mb-4" />
+        <h2 className="text-2xl font-bold tracking-tight">Client Not Found</h2>
+        <p className="text-muted-foreground mt-2">This client may have been deleted.</p>
+        <Link href="/clients" className="mt-4">
+          <Button variant="outline"><ArrowLeft className="mr-2 h-4 w-4"/> Back to Clients</Button>
+        </Link>
+      </div>
+    )
+  }
 
   return (
-    <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
-      <div className="flex flex-col md:flex-row md:items-center gap-4">
-        <Link href="/clients">
-          <Button variant="outline" size="icon" className="h-8 w-8">
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-        </Link>
-        <div className="flex-1 flex flex-col md:flex-row md:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 shrink-0 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xl">
-              {client.name.charAt(0)}
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold tracking-tight leading-none">{client.name}</h2>
-              <p className="text-sm text-muted-foreground">{client.industry}</p>
-            </div>
-            <Badge className="ml-2" variant={client.status === "Active" ? "secondary" : "outline"}>{client.status}</Badge>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button variant="outline" onClick={() => toast("Opening Google Drive...")}>
-              <ExternalLink className="mr-2 h-4 w-4" />
-              Drive Folder
+    <div className="flex-1 p-4 md:p-8 pt-6 max-w-[1600px] mx-auto w-full space-y-8">
+      {/* Header */}
+      <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+        <div className="flex items-start gap-4">
+          <Link href="/clients">
+            <Button variant="ghost" size="icon" className="mt-1 rounded-full bg-muted/50 hover:bg-muted">
+              <ArrowLeft className="h-4 w-4" />
             </Button>
-            <Button variant="default" onClick={() => toast("Edit Client modal opened")}>Edit Client</Button>
+          </Link>
+          <div>
+            <div className="flex items-center gap-3 mb-1">
+              <h1 className="text-3xl font-bold tracking-tight">{client.name}</h1>
+              <Badge variant={client.status === "Active" ? "default" : "secondary"}>
+                {client.status}
+              </Badge>
+            </div>
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-muted-foreground mt-2">
+              <span className="flex items-center"><Building2 className="mr-1.5 h-3.5 w-3.5" /> {client.industry}</span>
+              <span className="flex items-center"><Mail className="mr-1.5 h-3.5 w-3.5" /> {client.contact}</span>
+              {client.website && <span className="flex items-center"><Globe className="mr-1.5 h-3.5 w-3.5" /> {client.website}</span>}
+            </div>
           </div>
         </div>
+        <div className="flex items-center gap-2">
+          <EditClientDialog client={client}>
+            <Button variant="outline" className="shadow-sm">Edit Profile</Button>
+          </EditClientDialog>
+          <Button size="icon" variant="outline" className="shadow-sm"><MoreVertical className="h-4 w-4"/></Button>
+        </div>
       </div>
-      
-      <Tabs defaultValue="overview" className="space-y-4 mt-6">
-        <TabsList className="bg-transparent border-b rounded-none w-full justify-start h-10 p-0 space-x-6">
-          <TabsTrigger value="overview" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-2">Overview</TabsTrigger>
-          <TabsTrigger value="strategy" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-2">Brand Strategy</TabsTrigger>
-          <TabsTrigger value="content" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-2">Content Calendar</TabsTrigger>
-          <TabsTrigger value="deliverables" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-2">Deliverables</TabsTrigger>
-          <TabsTrigger value="invoices" className="data-[state=active]:bg-transparent data-[state=active]:shadow-none data-[state=active]:border-b-2 data-[state=active]:border-primary rounded-none px-0 pb-2">Invoices</TabsTrigger>
-        </TabsList>
-        
-        <TabsContent value="overview" className="space-y-4 mt-4">
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-            <Card className="col-span-3">
-              <CardHeader>
-                <CardTitle>Client Details</CardTitle>
-                <CardDescription>Primary contact and basic info.</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center gap-2 text-sm">
-                  <Mail className="h-4 w-4 text-muted-foreground" />
-                  <span>{client.contact}</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <Phone className="h-4 w-4 text-muted-foreground" />
-                  <span>+1 (555) 123-4567</span>
-                </div>
-                <div className="flex items-center gap-2 text-sm">
-                  <ExternalLink className="h-4 w-4 text-muted-foreground" />
-                  <a href={`https://${client.website}`} target="_blank" rel="noreferrer" className="text-primary hover:underline">{client.website}</a>
-                </div>
-                <div className="pt-4 mt-4 border-t">
-                  <h4 className="text-sm font-medium mb-2">Active Services</h4>
-                  <div className="flex gap-2 flex-wrap">
-                    {client.services.map(s => (
-                      <Badge key={s} variant="secondary">{s}</Badge>
-                    ))}
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
 
-            <Card className="col-span-1 md:col-span-4">
-              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <div className="space-y-1">
-                  <CardTitle>Recent Activity</CardTitle>
-                  <CardDescription>Latest updates for {client.name}.</CardDescription>
-                </div>
-                <Button variant="ghost" size="icon" onClick={() => toast("View all activity")}><MoreHorizontal className="h-4 w-4" /></Button>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4 mt-4">
-                  {[1, 2, 3].map((i) => (
-                    <div key={i} className="flex gap-4">
-                      <div className="mt-0.5 w-2 h-2 shrink-0 rounded-full bg-primary ring-4 ring-primary/10" />
-                      <div className="space-y-1">
-                        <p className="text-sm font-medium leading-none">Invoice #00{i} Paid</p>
-                        <p className="text-xs text-muted-foreground">2 days ago</p>
-                      </div>
+      <Tabs defaultValue="overview" className="w-full">
+        <TabsList className="bg-muted/50 p-1 mb-6 inline-flex h-10 items-center justify-center rounded-lg text-muted-foreground self-start">
+          <TabsTrigger value="overview" className="rounded-md px-4 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">Overview</TabsTrigger>
+          <TabsTrigger value="content" className="rounded-md px-4 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">Content</TabsTrigger>
+          <TabsTrigger value="assets" className="rounded-md px-4 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">Assets</TabsTrigger>
+          <TabsTrigger value="invoices" className="rounded-md px-4 py-1.5 text-sm font-medium transition-all data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm">Invoices</TabsTrigger>
+        </TabsList>
+
+        <TabsContent value="overview" className="mt-0 outline-none">
+          <div className="grid gap-6 md:grid-cols-3">
+            {/* Left Column: Metrics & Info */}
+            <div className="space-y-6">
+              <Card className="bg-card border-border/50 shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-sm font-medium text-muted-foreground">Active Services</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex flex-wrap gap-2">
+                    {client.services?.length > 0 ? client.services.map((s: string) => (
+                      <Badge key={s} variant="secondary" className="bg-muted text-foreground">
+                        {s}
+                      </Badge>
+                    )) : <span className="text-sm text-muted-foreground">No services listed</span>}
+                  </div>
+                </CardContent>
+              </Card>
+
+              <Card className="bg-gradient-to-br from-emerald-500/10 to-emerald-500/5 border-emerald-500/20 shadow-sm">
+                <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium text-emerald-600 flex items-center">
+                    <CreditCard className="mr-2 h-4 w-4" /> Lifetime Value
+                  </CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="text-3xl font-bold text-emerald-700 dark:text-emerald-500">{client.spent || "$0"}</div>
+                  <p className="text-xs text-emerald-600/70 mt-1">All invoices paid & pending</p>
+                </CardContent>
+              </Card>
+              
+              <Card className="bg-card border-border/50 shadow-sm">
+                <CardHeader className="pb-3">
+                  <CardTitle className="text-lg">Recent Notes</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground italic">No recent notes for this client.</p>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Right Column: Content Summary */}
+            <div className="md:col-span-2 space-y-6">
+              <Card className="bg-card border-border/50 shadow-sm h-full max-h-[600px] flex flex-col">
+                <CardHeader className="flex flex-row items-center justify-between border-b border-border/50 pb-4 bg-muted/20">
+                  <div>
+                    <CardTitle className="text-lg flex items-center">
+                      <LayoutTemplate className="mr-2 h-5 w-5 text-muted-foreground" /> 
+                      Recent Pipeline Activity
+                    </CardTitle>
+                    <CardDescription>Latest deliverables for {client.name}</CardDescription>
+                  </div>
+                </CardHeader>
+                <CardContent className="flex-1 overflow-y-auto p-0">
+                  {isLoadingContent ? (
+                    <div className="p-8 text-center text-muted-foreground animate-pulse">Loading content...</div>
+                  ) : clientContent.length === 0 ? (
+                    <div className="p-12 text-center flex flex-col items-center text-muted-foreground">
+                      <LayoutTemplate className="h-10 w-10 mb-3 opacity-20" />
+                      <p className="font-medium">No active content</p>
+                      <p className="text-sm mt-1">Create deliverables from the Content module.</p>
                     </div>
-                  ))}
-                </div>
-              </CardContent>
-            </Card>
+                  ) : (
+                    <div className="divide-y divide-border/50">
+                      {clientContent.slice(0,5).map(item => (
+                        <div key={item.id} className="p-4 hover:bg-muted/30 transition-colors flex items-center justify-between">
+                          <div className="space-y-1">
+                            <p className="font-medium">{item.title}</p>
+                            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+                              {item.platform && <span className="font-semibold">{item.platform}</span>}
+                              {item.type && <span>{item.type}</span>}
+                              {item.due_date && <span>Due {format(new Date(item.due_date), "MMM d")}</span>}
+                            </div>
+                          </div>
+                          <Badge variant="outline" className={
+                            item.status === 'Published' ? 'text-emerald-500 border-emerald-500/30' : 
+                            item.status === 'Review' ? 'text-purple-500 border-purple-500/30' : ''
+                          }>
+                            {item.status}
+                          </Badge>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </CardContent>
+              </Card>
+            </div>
           </div>
         </TabsContent>
-        
-        <TabsContent value="strategy" className="mt-4">
-          <Card>
-            <CardHeader className="flex flex-col md:flex-row md:items-center justify-between pb-2 space-y-2 md:space-y-0">
-              <div className="space-y-1">
-                <CardTitle>Brand Strategy Document</CardTitle>
-                <CardDescription>Core positioning, voice and audience.</CardDescription>
-              </div>
-              <Button size="sm" onClick={() => toast("Upload dialog opened")}><Upload className="mr-2 h-4 w-4"/> Upload New Version</Button>
-            </CardHeader>
-            <CardContent>
-               <div className="h-64 border-2 border-dashed rounded-lg flex items-center justify-center text-muted-foreground bg-muted/50 p-4 text-center">
-                  Rich Text Editor / PDF Viewer Placeholder
-               </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
 
-        <TabsContent value="content" className="mt-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Content Calendar Preview</CardTitle>
-              <CardDescription>Upcoming posts and reels.</CardDescription>
-            </CardHeader>
-            <CardContent>
-               <div className="h-64 border border-dashed rounded-lg flex flex-col items-center justify-center text-muted-foreground gap-4 p-4 text-center">
-                  <p>Kanban Board integration goes here.</p>
-                  <Button variant="outline" onClick={() => toast("Redirecting to full calendar...")}>View Full Calendar</Button>
-               </div>
-            </CardContent>
-          </Card>
+        <TabsContent value="content" className="mt-0 outline-none -mx-4 md:-mx-8">
+          <ContentLayout clientId={clientId} />
+        </TabsContent>
+        
+        <TabsContent value="assets" className="mt-0 outline-none -mx-4 md:-mx-8">
+          <AssetManager clientId={clientId} />
+        </TabsContent>
+        
+        <TabsContent value="invoices" className="mt-0 outline-none">
+          <div className="p-12 text-center flex flex-col items-center text-muted-foreground border-2 border-dashed rounded-lg bg-muted/10">
+            <CreditCard className="h-10 w-10 mb-3 opacity-20" />
+            <p className="font-medium">Invoices Workspace</p>
+            <p className="text-sm mt-1 max-w-sm">A filtered invoice list for {client.name} will appear here.</p>
+          </div>
         </TabsContent>
       </Tabs>
     </div>

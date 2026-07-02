@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { Search, Plus, Folder, File, FileText, Image as ImageIcon, Video, Archive, UploadCloud, Grid, List, MoreVertical, Download } from "lucide-react"
+import { Search, Plus, Folder, File, FileText, Image as ImageIcon, Video, Archive, UploadCloud, Grid, List, MoreVertical, Download, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
@@ -15,9 +15,21 @@ import {
 } from "@/components/ui/table"
 import { mockAssetFolders, mockAssetFiles } from "../data/mock-assets"
 import { toast } from "sonner"
+import { useClients } from "@/hooks/use-clients"
 
-export function AssetManager() {
+export function AssetManager({ clientId }: { clientId?: string }) {
   const [view, setView] = useState<"grid" | "list">("list")
+  const [selectedFilterId, setSelectedFilterId] = useState<string>("all")
+  const { data: clients = [] } = useClients()
+
+  const effectiveClientId = clientId || (selectedFilterId !== "all" ? selectedFilterId : undefined)
+  
+  // Filter assets for this specific client if clientId is provided
+  // In a real app with useAssets hook, we'd do the filtering similarly to useContent
+  const files = effectiveClientId 
+    ? mockAssetFiles.filter(f => f.client === mockAssetFiles.find(mf => mf.client)?.client) // Mock hack: assume a match for demo or filter by client string
+    : mockAssetFiles
+
 
   const getFileIcon = (type: string) => {
     switch(type) {
@@ -33,7 +45,22 @@ export function AssetManager() {
     <div className="flex-1 flex flex-col p-4 md:p-8 pt-6 h-full min-h-screen">
       <div className="flex flex-col md:flex-row md:items-center justify-between space-y-4 md:space-y-0 mb-6">
         <h2 className="text-3xl font-bold tracking-tight">Assets</h2>
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center gap-3">
+          {!clientId && (
+            <div className="flex items-center gap-2 bg-muted/30 px-3 py-1.5 rounded-md border border-border/50">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <select 
+                className="bg-transparent text-sm border-none outline-none focus:ring-0 text-foreground"
+                value={selectedFilterId}
+                onChange={(e) => setSelectedFilterId(e.target.value)}
+              >
+                <option value="all">All Clients</option>
+                {clients.map(c => (
+                  <option key={c.id} value={c.id}>{c.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
           <Button onClick={() => toast("Upload modal opened")}><UploadCloud className="mr-2 h-4 w-4" /> Upload Files</Button>
         </div>
       </div>
@@ -64,31 +91,33 @@ export function AssetManager() {
       </div>
 
       <div className="space-y-6">
-        <div>
-          <h3 className="text-lg font-medium mb-4">Folders</h3>
-          <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
-            {mockAssetFolders.map((folder) => (
-              <div 
-                key={folder.id} 
-                className="group flex items-center p-4 rounded-xl border bg-card hover:border-primary/50 cursor-pointer transition-colors"
-              >
-                <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
-                  <Folder className="h-5 w-5 text-primary" fill="currentColor" opacity={0.2} />
+        {!clientId && (
+          <div>
+            <h3 className="text-lg font-medium mb-4">Folders</h3>
+            <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+              {mockAssetFolders.map((folder) => (
+                <div 
+                  key={folder.id} 
+                  className="group flex items-center p-4 rounded-xl border bg-card hover:border-primary/50 cursor-pointer transition-colors"
+                >
+                  <div className="h-10 w-10 rounded-lg bg-primary/10 flex items-center justify-center shrink-0">
+                    <Folder className="h-5 w-5 text-primary" fill="currentColor" opacity={0.2} />
+                  </div>
+                  <div className="ml-4 flex-1 overflow-hidden">
+                    <p className="font-medium text-sm truncate">{folder.name}</p>
+                    <p className="text-xs text-muted-foreground">{folder.itemCount} files</p>
+                  </div>
+                  <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <MoreVertical className="h-4 w-4" />
+                  </Button>
                 </div>
-                <div className="ml-4 flex-1 overflow-hidden">
-                  <p className="font-medium text-sm truncate">{folder.name}</p>
-                  <p className="text-xs text-muted-foreground">{folder.itemCount} files</p>
-                </div>
-                <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity">
-                  <MoreVertical className="h-4 w-4" />
-                </Button>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div>
-          <h3 className="text-lg font-medium mb-4">Recent Files</h3>
+          <h3 className="text-lg font-medium mb-4">{clientId ? "Client Assets" : "Recent Files"}</h3>
           {view === "list" ? (
             <div className="rounded-md border bg-card">
               <Table>
@@ -102,7 +131,7 @@ export function AssetManager() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {mockAssetFiles.map((file) => (
+                  {files.map((file) => (
                     <TableRow key={file.id}>
                       <TableCell className="font-medium">
                         <div className="flex items-center gap-3">
@@ -130,7 +159,7 @@ export function AssetManager() {
             </div>
           ) : (
             <div className="grid gap-4 grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 md:grid-cols-4">
-              {mockAssetFiles.map((file) => (
+              {files.map((file) => (
                 <div 
                   key={file.id} 
                   className="group flex flex-col p-4 rounded-xl border bg-card hover:border-primary/50 cursor-pointer transition-colors relative"

@@ -18,11 +18,14 @@ import {
 import { Plus, Lightbulb } from "lucide-react"
 import { useCreateIdea } from "../api/idea-mutations"
 
+import { useClients } from "@/hooks/use-clients"
+
 const ideaSchema = z.object({
   title: z.string().min(2, "Title is required"),
   image_url: z.string().url("Must be a valid image URL"),
   source: z.string().optional(),
   tags: z.string().optional(),
+  client_id: z.string().optional(),
   aspect_ratio: z.enum(["square", "portrait", "landscape"]),
 })
 
@@ -31,6 +34,7 @@ type IdeaFormValues = z.infer<typeof ideaSchema>
 export function AddIdeaDialog() {
   const [open, setOpen] = useState(false)
   const { mutate: createIdea, isPending } = useCreateIdea()
+  const { data: clients = [] } = useClients()
 
   const form = useForm<IdeaFormValues>({
     resolver: zodResolver(ideaSchema),
@@ -39,6 +43,7 @@ export function AddIdeaDialog() {
       image_url: "",
       source: "",
       tags: "",
+      client_id: "none",
       aspect_ratio: "portrait",
     },
   })
@@ -52,6 +57,7 @@ export function AddIdeaDialog() {
         image_url: data.image_url,
         source: data.source,
         aspect_ratio: data.aspect_ratio,
+        client_id: data.client_id === "none" ? undefined : data.client_id,
         tags: tagsArray,
       },
       {
@@ -109,6 +115,21 @@ export function AddIdeaDialog() {
               <option value="portrait">Portrait (9:16)</option>
               <option value="square">Square (1:1)</option>
               <option value="landscape">Landscape (16:9)</option>
+            </select>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="client_id" className="text-sm font-semibold">Attach to Brand (Optional)</Label>
+            <select 
+              id="client_id" 
+              {...form.register("client_id")} 
+              disabled={isPending} 
+              className="flex h-10 w-full rounded-md border border-muted-foreground/20 bg-muted/50 px-3 py-2 text-sm shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-primary/50 disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              <option value="none">-- Internal / No Brand --</option>
+              {clients.map(client => (
+                <option key={client.id} value={client.id}>{client.name}</option>
+              ))}
             </select>
           </div>
 

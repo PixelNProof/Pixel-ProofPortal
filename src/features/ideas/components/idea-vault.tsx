@@ -148,10 +148,16 @@ export function IdeaVault() {
 
               {/* Content */}
               <div className="p-4 bg-card/80 backdrop-blur-xl">
-                <h3 className="font-semibold text-base leading-tight mb-3 group-hover:text-primary transition-colors line-clamp-2">
+                <h3 className="font-semibold text-base leading-tight mb-2 group-hover:text-primary transition-colors line-clamp-2">
                   {idea.title}
                 </h3>
                 
+                {idea.client && (
+                  <Badge variant="outline" className="mb-3 border-primary/20 bg-primary/5 text-primary text-[10px]">
+                    {idea.client.name}
+                  </Badge>
+                )}
+
                 <div className="flex flex-wrap gap-1.5">
                   {idea.tags.map(tag => (
                     <Badge 

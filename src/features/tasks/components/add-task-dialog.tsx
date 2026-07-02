@@ -121,7 +121,7 @@ export function AddTaskDialog() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="client_id" className="text-sm font-medium">Client (Optional)</Label>
+            <Label htmlFor="client_id" className="text-sm font-medium">Attach to Brand (Optional)</Label>
             <select 
               id="client_id" 
               {...form.register("client_id")} 

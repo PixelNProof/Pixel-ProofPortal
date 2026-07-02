@@ -6,5 +6,7 @@ export interface Idea {
   aspect_ratio: "square" | "portrait" | "landscape" | string;
   image_url: string;
   source?: string;
+  client_id?: string;
+  client?: { name: string };
   created_at: string;
 }

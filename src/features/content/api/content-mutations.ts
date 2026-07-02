@@ -3,6 +3,7 @@ import { createClient } from "@/utils/supabase/client"
 import { toast } from "sonner"
 import { ContentStatus, ContentType, ContentPlatform } from "../types/content"
 import { mockContent } from "../data/mock-content"
+import { mockClients } from "@/features/clients/data/mock-clients"
 
 export function useCreateContent() {
   const queryClient = useQueryClient()
@@ -32,10 +33,11 @@ export function useCreateContent() {
         return data
       } catch (err) {
         console.warn("Using mock fallback for createContent")
+        const client = newContent.client_id ? mockClients.find(c => c.id === newContent.client_id) : undefined;
         const mockItem = {
           id: Math.random().toString(36).substring(7),
           ...newContent,
-          client: undefined,
+          client: client ? { name: client.name, id: client.id } : undefined,
         }
         mockContent.push(mockItem as any)
         return mockItem

@@ -71,7 +71,7 @@ export function ClientList() {
                 </TableCell>
                 <TableCell>
                   <div className="flex gap-1 flex-wrap">
-                    {client.services.map((s) => (
+                    {client.services?.map((s: string) => (
                       <Badge key={s} variant="outline" className="text-xs bg-muted">
                         {s}
                       </Badge>
